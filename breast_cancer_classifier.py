@@ -6,6 +6,9 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 import gdown
 
+# Log TensorFlow version to help diagnose version-related issues
+print(f"TensorFlow version: {tf.__version__}")
+
 # Import helper functions from utils.py (if needed)
 from utils import color_to_trainId, trainId_to_name 
 
