@@ -43,20 +43,16 @@ if uploaded_image is not None:
     img_array = np.array(image) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
 
-    # Make prediction
-    if st.button('Predict'):
-        prediction = model.predict(img_array)
+if st.button('Predict'):
+    prediction = model.predict(img_array) 
 
-        # Convert prediction to RGB image (use your existing logic)
-        predicted_rgb = np.zeros((prediction.shape[1], prediction.shape[2], 3))
-        for color, trainId in color_to_trainId.items():
-            mask = np.argmax(prediction[0], axis=-1) == trainId
-            predicted_rgb[mask] = color
+    # Convert prediction to RGB image 
+    predicted_rgb = np.zeros((prediction.shape[1], prediction.shape[2], 3))
+    for color, trainId in color_to_trainId.items():
+        mask = np.argmax(prediction[0], axis=-1) == trainId
+        predicted_rgb[mask] = color
 
-        predicted_image = Image.fromarray(predicted_rgb.astype('uint8'))
+    predicted_image = Image.fromarray(predicted_rgb.astype('uint8'))
 
-        # Annotate the predicted image (optional, use your existing logic)
-        # ... 
-
-        # Display the result
-        st.image(predicted_image, caption='Predicted Segmentation', use_column_width=True)
+    # Display the result
+    st.image(predicted_image, caption='Predicted Segmentation', use_column_width=True)
