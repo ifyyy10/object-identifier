@@ -19,13 +19,13 @@ def download_model():
     print("Download complete.")
 
 # Check if model file exists, if not, download it
-model = 'cityscapes model.h5'
-if not os.path.isfile(model):
+model_file = 'cityscapes model.h5'
+if not os.path.isfile(model_file):
     download_model()
 
 print("Loading model...")
 try:
-    model = load_model(model)
+    model = load_model(model_file)
     print("Model loaded successfully.")
 except Exception as e:
     print(f"Error loading model: {e}")
@@ -43,14 +43,23 @@ if uploaded_image is not None:
     img_array = np.array(image) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
 
-if st.button('Predict'):
-    prediction = model.predict(img_array) 
+  # Make prediction
+    if st.button('Predict'):
+        prediction = model.predict(img_array)
 
-    # Convert prediction to RGB image 
-    predicted_rgb = np.zeros((prediction.shape[1], prediction.shape[2], 3))
-    for color, trainId in color_to_trainId.items():
-        mask = np.argmax(prediction[0], axis=-1) == trainId
-        predicted_rgb[mask] = color
+        # Convert prediction to RGB image (use your existing logic)
+        predicted_rgb = np.zeros((prediction.shape[1], prediction.shape[2], 3))
+        for color, trainId in color_to_trainId.items():
+            mask = np.argmax(prediction[0], axis=-1) == trainId
+            predicted_rgb[mask] = color
+
+        predicted_image = Image.fromarray(predicted_rgb.astype('uint8'))
+
+        # Annotate the predicted image (optional, use your existing logic)
+        # ... 
+
+        # Display the result
+        st.image(predicted_image, caption='Predicted Segmentation', use_column_width=True)
 
     predicted_image = Image.fromarray(predicted_rgb.astype('uint8'))
 
