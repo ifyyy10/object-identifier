@@ -13,13 +13,13 @@ from utils import color_to_trainId, trainId_to_name
 def download_model():
     file_id = '1wUafz9VOoPno0VsrtXMJ8NSzVs_oK_gR'
     url = f'https://drive.google.com/uc?id={file_id}'
-    output = 'cityscapes model.h5'
+    output = 'cityscape model.h5'
     print(f"Downloading model from {url}...")
     gdown.download(url, output, quiet=False)
     print("Download complete.")
 
 # Check if model file exists, if not, download it
-model_file = 'cityscapes model.h5'
+model_file = 'cityscape model.h5'
 if not os.path.isfile(model_file):
     download_model()
 
