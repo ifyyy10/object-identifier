@@ -6,9 +6,6 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 import gdown
 
-# Log TensorFlow version to help diagnose version-related issues
-print(f"TensorFlow version: {tf.__version__}")
-
 # Import helper functions from utils.py (if needed)
 from utils import color_to_trainId, trainId_to_name
 
@@ -30,10 +27,9 @@ print("Loading model...")
 try:
     model = load_model(model_file)
     print("Model loaded successfully.")
-    # Optional: compile the model if you plan to train or evaluate
-    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 except Exception as e:
     print(f"Error loading model: {e}")
+
 # Streamlit App
 st.title("Scene Recognition App")
 
@@ -51,17 +47,29 @@ if uploaded_image is not None:
     img_array = np.array(image) / 255.0
     img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
 
-# Make prediction
+    # Make prediction
     if st.button('Predict'):
         prediction = model.predict(img_array)
 
-        # Convert prediction to RGB image
+        # Convert prediction to class trainIds
+        predicted_trainId = np.argmax(prediction[0], axis=-1)
+
+        # Get the unique trainIds predicted in the image
+        unique_trainIds = np.unique(predicted_trainId)
+
+        # Map trainIds to class names
+        predicted_classes = [trainId_to_name[trainId] for trainId in unique_trainIds if trainId in trainId_to_name]
+
+        # Display the predicted classes
+        st.write("Predicted Classes in the Image:")
+        st.write(predicted_classes)
+
+        # Convert prediction to RGB image for visualization
         predicted_rgb = np.zeros((prediction.shape[1], prediction.shape[2], 3))
         for color, trainId in color_to_trainId.items():
-            mask = np.argmax(prediction[0], axis=-1) == trainId
+            mask = predicted_trainId == trainId
             predicted_rgb[mask] = color
 
-    # Create and display the image (outside the 'if' block)
-    if 'predicted_rgb' in locals(): 
+        # Create and display the predicted segmentation image
         predicted_image = Image.fromarray(predicted_rgb.astype('uint8'))
         st.image(predicted_image, caption='Predicted Segmentation', use_column_width=True)
