@@ -11,7 +11,7 @@ from utils import color_to_trainId, trainId_to_name
 # Load the trained model (ensure the path is correct)
 # Function to download model from Google Drive
 def download_model():
-    file_id = '1xJBec2aPibWKWYMfoOz2K5hiq16QeI0x'
+    file_id = '1wUafz9VOoPno0VsrtXMJ8NSzVs_oK_gR'
     url = f'https://drive.google.com/uc?id={file_id}'
     output = 'cityscapes model.h5'
     print(f"Downloading model from {url}...")
