@@ -18,12 +18,12 @@ def download_model():
 
 # Check if model file exists, if not, download it
 model = 'cityscapes model.h5'
-if not os.path.isfile(model_file):
+if not os.path.isfile(model):
     download_model()
 
 print("Loading model...")
 try:
-    model = load_model(model_file)
+    model = load_model(model)
     print("Model loaded successfully.")
 except Exception as e:
     print(f"Error loading model: {e}")
