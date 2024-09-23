@@ -10,10 +10,9 @@ import gdown
 print(f"TensorFlow version: {tf.__version__}")
 
 # Import helper functions from utils.py (if needed)
-from utils import color_to_trainId, trainId_to_name 
+from utils import color_to_trainId, trainId_to_name
 
 # Load the trained model (ensure the path is correct)
-# Function to download model from Google Drive
 def download_model():
     file_id = '1wUafz9VOoPno0VsrtXMJ8NSzVs_oK_gR'
     url = f'https://drive.google.com/uc?id={file_id}'
@@ -31,6 +30,8 @@ print("Loading model...")
 try:
     model = load_model(model_file)
     print("Model loaded successfully.")
+    # Optional: compile the model if you plan to train or evaluate
+    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 except Exception as e:
     print(f"Error loading model: {e}")
 # Streamlit App
