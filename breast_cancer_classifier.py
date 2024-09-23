@@ -6,20 +6,20 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 import gdown
 
-# Import helper functions from utils.py (if needed)
+# Helper functions (adjust these if necessary based on your utils)
 from utils import color_to_trainId, trainId_to_name
 
-# Load the trained model (ensure the path is correct)
+# Download and load model
 def download_model():
     file_id = '1wUafz9VOoPno0VsrtXMJ8NSzVs_oK_gR'
     url = f'https://drive.google.com/uc?id={file_id}'
-    output = 'cityscape model.h5'
+    output = 'cityscape_model.h5'
     print(f"Downloading model from {url}...")
     gdown.download(url, output, quiet=False)
     print("Download complete.")
 
 # Check if model file exists, if not, download it
-model_file = 'cityscape model.h5'
+model_file = 'cityscape_model.h5'
 if not os.path.isfile(model_file):
     download_model()
 
@@ -33,6 +33,9 @@ except Exception as e:
 # Streamlit App
 st.title("Scene Recognition App")
 
+# Confidence Threshold Slider
+confidence_threshold = st.slider('Confidence Threshold', 0.0, 1.0, 0.5)
+
 # Upload image
 uploaded_image = st.file_uploader("Choose an image...", type=["jpg", "png"])
 
@@ -43,7 +46,7 @@ if uploaded_image is not None:
     # Resize the image to 256x256
     image = image.resize((256, 256))
 
-    # Preprocess image 
+    # Preprocess image
     img_array = np.array(image) / 255.0
     img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
 
@@ -54,22 +57,33 @@ if uploaded_image is not None:
         # Convert prediction to class trainIds
         predicted_trainId = np.argmax(prediction[0], axis=-1)
 
-        # Get the unique trainIds predicted in the image
+        # Get unique trainIds predicted in the image
         unique_trainIds = np.unique(predicted_trainId)
 
         # Map trainIds to class names
         predicted_classes = [trainId_to_name[trainId] for trainId in unique_trainIds if trainId in trainId_to_name]
 
-        # Display the predicted classes
+        # Display predicted classes
         st.write("Predicted Classes in the Image:")
         st.write(predicted_classes)
 
-        # Convert prediction to RGB image for visualization
+        # Create RGB image for visualization
         predicted_rgb = np.zeros((prediction.shape[1], prediction.shape[2], 3))
         for color, trainId in color_to_trainId.items():
             mask = predicted_trainId == trainId
             predicted_rgb[mask] = color
 
-        # Create and display the predicted segmentation image
+        # Add text labels to the image
+        for trainId in unique_trainIds:
+            if trainId in trainId_to_name:
+                label = trainId_to_name[trainId]
+                # Find bounding boxes for each labeled object and place text
+                mask = predicted_trainId == trainId
+                contours, _ = cv2.findContours(mask.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+                for contour in contours:
+                    x, y, w, h = cv2.boundingRect(contour)
+                    cv2.putText(predicted_rgb, label, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+
+        # Display the segmentation image
         predicted_image = Image.fromarray(predicted_rgb.astype('uint8'))
         st.image(predicted_image, caption='Predicted Segmentation', use_column_width=True)
