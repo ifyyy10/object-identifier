@@ -33,7 +33,7 @@ except Exception as e:
 st.title("Scene Recognition App")
 
 # Upload image
-uploaded_image = st.file_uploader("Choose an image...", type="jpg")
+uploaded_image = st.file_uploader("Choose an image...", type=["jpg", "png"])
 
 if uploaded_image is not None:
     image = Image.open(uploaded_image)
