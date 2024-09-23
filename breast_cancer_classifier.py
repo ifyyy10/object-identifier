@@ -3,6 +3,7 @@ import streamlit as st
 from PIL import Image
 import numpy as np
 import tensorflow as tf
+import gdown
 
 # Import helper functions from utils.py (if needed)
 from utils import color_to_trainId, trainId_to_name 
