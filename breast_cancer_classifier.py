@@ -41,6 +41,7 @@ if uploaded_image is not None:
     st.image(image, caption='Uploaded Image', use_column_width=True)
 
     # Resize the image to 256x256 for the model
+    original_image = image.copy()
     image = image.resize((256, 256))
 
     # Preprocess image 
@@ -70,11 +71,12 @@ if uploaded_image is not None:
             mask = predicted_trainId == trainId
             predicted_rgb[mask] = color
 
-        # Create segmentation image
-        predicted_image = Image.fromarray(predicted_rgb.astype('uint8'))
+        # Overlay the segmentation mask onto the original image
+        predicted_rgb = Image.fromarray(predicted_rgb.astype('uint8')).resize(original_image.size)
+        blended_image = Image.blend(original_image.convert('RGB'), predicted_rgb, alpha=0.5)
 
         # Draw text labels for each object
-        draw = ImageDraw.Draw(predicted_image)
+        draw = ImageDraw.Draw(blended_image)
         font = ImageFont.load_default()  # You can use custom font if available
 
         for trainId in unique_trainIds:
@@ -87,5 +89,5 @@ if uploaded_image is not None:
                     x, y = np.mean(coords, axis=0).astype(int)
                     draw.text((x, y), label, fill=(255, 255, 255), font=font)
 
-        # Display the labeled segmentation image
-        st.image(predicted_image, caption='Predicted Segmentation with Labels', use_column_width=True)
+        # Display the blended image with the mask
+        st.image(blended_image, caption='Predicted Segmentation Overlay', use_column_width=True)
