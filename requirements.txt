@@ -6,4 +6,5 @@ scikit-learn
 numpy
 gdown
 scipy
-opencv-python
+opencv-python-headless
+
