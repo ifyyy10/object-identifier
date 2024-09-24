@@ -12,15 +12,15 @@ from utils import color_to_trainId, trainId_to_name
 
 # Download and load model
 def download_model():
-    file_id = '1wUafz9VOoPno0VsrtXMJ8NSzVs_oK_gR'
+    file_id = '10Bkmg8uBfwZnxK58I15FODY7v4oGIvN2'
     url = f'https://drive.google.com/uc?id={file_id}'
-    output = 'cityscape_model.h5'
+    output = 'segment object recognition model.h5'
     print(f"Downloading model from {url}...")
     gdown.download(url, output, quiet=False)
     print("Download complete.")
 
 # Check if model file exists, if not, download it
-model_file = 'cityscape_model.h5'
+model_file = 'segment object recognition model.h5'
 if not os.path.isfile(model_file):
     download_model()
 
